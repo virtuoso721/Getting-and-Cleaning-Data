@@ -1,42 +1,39 @@
-## create directory of Data Cleaning
-fileUrl <- "https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Fss06hid.csv"
-download.file(fileUrl, destfile = "./housing.csv", method = "curl")
-list.files(".")
-housing_data <- read.csv("housing.csv")
+## Coursera - Getting and Cleaning Data - Quiz 1
+## Shu Wang
 
-## Question 1. How many properties are worth $1,000,000 or more?
-housing_data_narm_logival <- complete.cases(housing_data$VAL)
-housing_data_VAL_24_logical <- housing_data$VAL == 24
-sum(housing_data_narm_logival & housing_data_VAL_24_logical)
+## Question 1
+fileURL <- "https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Fss06hid.csv"
+download.file(fileURL, destfile = "housing.csv", method = "curl")
+housing <- read.csv("housing.csv")
+nrow(subset(housing, VAL >= 24, select = VAL))
 
-## Qestion 3.
-library("xlsx")
-library("rJava"
-library("xlsxjars")
-fileUrl <- "https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2FDATA.gov_NGAP.xlsx"
-setwd("./Data Cleaning")
-download.file(fileUrl, destfile = "./Natural Gas.csv", method = "curl")
-colIndex <- 7:15
+## Question 2
+fileURL <- "https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2FDATA.gov_NGAP.xlsx"
+download.file(fileURL, destfile = "Natural Gas.xlsx", method = "curl")
+library(xlsx)
 rowIndex <- 18:23
-dat <- read.xlsx("./Natural Gas.csv", sheetIndex = 1, colIndex = colIndex, rowIndex = rowIndex)
+colIndex <- 7:15
+dat <- read.xlsx("Natural Gas.xlsx", sheetIndex = 1, rowIndex = rowIndex, colIndex = colIndex)
 sum(dat$Zip*dat$Ext,na.rm=T)
 
-## Question 4.
+## Question 3
+install.packages("XML")
 library(XML)
-fileUrl <- "http://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Frestaurants.xml"
-restaurant <- xmlTreeParse(fileUrl, useInternal = TRUE)
+fileURL <- "http://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Frestaurants.xml"
+restaurant <- xmlTreeParse(fileURL, useInternal = TRUE)
 rootNode <- xmlRoot(restaurant)
 zipcode <- xpathSApply(rootNode, "//zipcode", xmlValue)
-sum(zipcode == "21231")
+sum(zipcode == '21231')
 
-## Question 5.
+## Question 4
+fileURL <- "https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Fss06pid.csv"
+tempf <- tempfile()
+download.file(fileURL, tempf, method = "curl")
 library(data.table)
-fileUrl = "https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Fss06pid.csv"
-download.file(fileUrl, destfile = "./idahoHousing.csv", method = "curl")
-DT <- fread("./idahoHousing.csv")
-system.time(DT[,mean(pwgtp15),by=SEX])
-system.time(mean(DT[DT$SEX==1,]$pwgtp15))+system.time(mean(DT[DT$SEX==2,]$pwgtp15))
-system.time(sapply(split(DT$pwgtp15,DT$SEX),mean))
+DT <- fread(tempf)
 system.time(mean(DT$pwgtp15,by=DT$SEX))
 system.time(tapply(DT$pwgtp15,DT$SEX,mean))
-system.time(rowMeans(DT)[DT$SEX==1])+system.time(rowMeans(DT)[DT$SEX==2])
+system.time(sapply(split(DT$pwgtp15,DT$SEX),mean))
+system.time(mean(DT[DT$SEX==1,]$pwgtp15)) + system.time(mean(DT[DT$SEX==2,]$pwgtp15))
+system.time(DT[,mean(pwgtp15),by=SEX])
+system.time(rowMeans(DT)[DT$SEX==1]) + system.time(rowMeans(DT)[DT$SEX==2])
